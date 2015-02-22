@@ -1,33 +1,72 @@
 var express = require('express');
 var router = express.Router();
-var LanguageCloud = require('sdl-languagecloud-api');
+var http = require('http');
+var querystring = require('querystring');
 
-//initialize the BeGlobal API
-var lc = new LanguageCloud.LanguageCloudAPI({
-  api_token: '1XDzY0DyOUI5F4218reyPA%3D%3D'
-});
+// var LanguageCloud = require('sdl-languagecloud-api');
+
+// //initialize the BeGlobal API
+// var lc = new LanguageCloud.LanguageCloudAPI({
+//   api_token: '1XDzY0DyOUI5F4218reyPA%3D%3D'
+// });
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
-// router.post('/translate', function(req, res, next){
-// 	console.log(req.body)
-// 	lc.translations.translate({
-// 	  text: 'hello',
-// 	  from: 'eng',
-// 	  to: 'fra'
-// 	  }, function(err, results) {
-// 	    if (err) {
-// 	      return console.log(err);
-// 	    }
-// 	    res.json(results)
-// 	    console.log(results);
-// 	  }
-// 	);
-	
-// })
+router.post('/translate', function(req, res, next){
+	var postData = querystring.stringify({
+		text: req.body.word,
+	  from: req.body.fromLang,
+	  to: req.body.toLang
+	});
+	console.log(postData)
+
+	var options = {
+		hostname: 'lc-api.sdl.com',
+		port: 80,
+		path: '/translate',
+		method: 'POST',
+		// auth: 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D',
+		headers: {
+			'Content-type': 'application/json',
+			'Content-Length': postData.length,
+			'Authorization': 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D'
+		}
+	};
+				// 'Authorization': 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D'
+
+
+	var apiCall = http.request(options, function(apiResponse){
+		 console.log('STATUS: ' + apiResponse.statusCode);
+	  console.log('HEADERS: ' + JSON.stringify(apiResponse.headers));
+	  apiResponse.setEncoding('utf8');
+		apiResponse.on('data', function (chunk) {
+	    console.log('BODY: ' + chunk);
+	  });
+	});
+
+	apiCall.on('error', function(e) {
+	  console.log('problem with request: ' + e.message);
+	});
+
+	apiCall.write(postData);
+	apiCall.end();	
+
+	// lc.translations.translate({
+	//   text: word,
+	//   from: tranFrom,
+	//   to: tranTo
+	//   }, function(err, results) {
+	//     if (err) {
+	//       return console.log(err);
+	//     }
+	//     // res.json(results)
+	//     console.log(results);
+	//   }
+	// );
+});
 
 
 module.exports = router;

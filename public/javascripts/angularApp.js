@@ -4,8 +4,9 @@ app.controller('TranslateCtrl', [
 	'$scope',
 	'$http',
 	function($scope, $http){
-	  $scope.submitTranslation = function(form) {
-			return $http.post('/translate', form).success(function(data){
+		$scope.form = {};
+	  $scope.submitTranslation = function() {
+			return $http.post('/translate', $scope.form).success(function(data){
 	      // do something
 	    });
 		};
