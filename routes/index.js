@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var http = require('http');
+var https = require('https');
 var querystring = require('querystring');
 
 // var LanguageCloud = require('sdl-languagecloud-api');
@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.post('/translate', function(req, res, next){
-	var postData = querystring.stringify({
+	var postData = JSON.stringify({
 		text: req.body.word,
 	  from: req.body.fromLang,
 	  to: req.body.toLang
@@ -25,21 +25,18 @@ router.post('/translate', function(req, res, next){
 
 	var options = {
 		hostname: 'lc-api.sdl.com',
-		port: 80,
 		path: '/translate',
 		method: 'POST',
-		// auth: 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D',
+		// auth: 'LC apiKey:1XDzY0DyOUI5F4218reyPA%3D%3D',
 		headers: {
 			'Content-type': 'application/json',
-			'Content-Length': postData.length,
+			// 'Content-Length': postData.length,
 			'Authorization': 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D'
 		}
 	};
-				// 'Authorization': 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D'
 
-
-	var apiCall = http.request(options, function(apiResponse){
-		 console.log('STATUS: ' + apiResponse.statusCode);
+	var apiCall = https.request(options, function(apiResponse){
+		console.log('STATUS: ' + apiResponse.statusMessage);
 	  console.log('HEADERS: ' + JSON.stringify(apiResponse.headers));
 	  apiResponse.setEncoding('utf8');
 		apiResponse.on('data', function (chunk) {
@@ -50,7 +47,7 @@ router.post('/translate', function(req, res, next){
 	apiCall.on('error', function(e) {
 	  console.log('problem with request: ' + e.message);
 	});
-
+	// var a = '{"text":"Hello Developers", "from":"eng", "to":"fra"}'
 	apiCall.write(postData);
 	apiCall.end();	
 
