@@ -5,9 +5,12 @@ app.controller('TranslateCtrl', [
 	'$http',
 	function($scope, $http){
 		$scope.form = {};
+		$scope.translation = ''
 	  $scope.submitTranslation = function() {
+	  	$scope.translation = ''
 			return $http.post('/translate', $scope.form).success(function(data){
-	      // do something
+	      console.log(data)
+	      $scope.translation = data["translation"]
 	    });
 		};
 	}]);

@@ -27,10 +27,8 @@ router.post('/translate', function(req, res, next){
 		hostname: 'lc-api.sdl.com',
 		path: '/translate',
 		method: 'POST',
-		// auth: 'LC apiKey:1XDzY0DyOUI5F4218reyPA%3D%3D',
 		headers: {
 			'Content-type': 'application/json',
-			// 'Content-Length': postData.length,
 			'Authorization': 'LC apiKey=1XDzY0DyOUI5F4218reyPA%3D%3D'
 		}
 	};
@@ -40,14 +38,17 @@ router.post('/translate', function(req, res, next){
 	  console.log('HEADERS: ' + JSON.stringify(apiResponse.headers));
 	  apiResponse.setEncoding('utf8');
 		apiResponse.on('data', function (chunk) {
-	    console.log('BODY: ' + chunk);
+			console.log(chunk["translation"])
+			console.log('BODY: ' + chunk);
+			res.write(chunk)
+			res.end()
+	   
 	  });
 	});
 
 	apiCall.on('error', function(e) {
 	  console.log('problem with request: ' + e.message);
 	});
-	// var a = '{"text":"Hello Developers", "from":"eng", "to":"fra"}'
 	apiCall.write(postData);
 	apiCall.end();	
 
